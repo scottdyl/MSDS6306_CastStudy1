@@ -1,0 +1,184 @@
+```{R}
+# Questions - this chunk just holds all the questions for my reading
+
+# 1.   How many breweries are present in each state?
+
+# 2.   Merge beer data with the breweries data. Print the first 6 observations and the last six observations to check the merged file.  (RMD only, this does not need to be included in the presentation or the deck.)
+
+# 3.   Address the missing values in each column.
+
+# 4.   Compute the median alcohol content and international bitterness unit for each state. Plot a bar chart to compare.
+
+# 5.   Which state has the maximum alcoholic (ABV) beer? Which state has the most bitter (IBU) beer?
+
+# 6.   Comment on the summary statistics and distribution of the ABV variable.
+
+# 7.   Is there an apparent relationship between the bitterness of the beer and its alcoholic content? Draw a scatter plot.  Make your best judgment of a relationship and EXPLAIN your answer.
+
+# 8.  Budweiser would also like to investigate the difference with respect to IBU and ABV between IPAs (India Pale Ales) and other types of Ale (any beer with “Ale” in its name other than IPA).  You decide to use KNN classification to investigate this relationship.  Provide statistical evidence one way or the other. You can of course assume your audience is comfortable with percentages … KNN is very easy to understand conceptually.
+
+# In addition, while you have decided to use KNN to investigate this relationship (KNN is required) you may also feel free to supplement your response to this question with any other methods or techniques you have learned.  Creativity and alternative solutions are always encouraged.  
+
+# 9. Knock their socks off!  Find one other useful inference from the data that you feel Budweiser may be able to find value in.  You must convince them why it is important and back up your conviction with appropriate statistical evidence
+
+# Your goal is to present your EDA (Answers to Questions 1,3,4,5,6,7).  At this point, teams should have presentation quality slides and presentation prepared.  Responses to each of the questions listed above should be prepared and addressed in this meeting.
+
+library(tidyverse)
+library(maps)
+library(mapproj)
+library(usmap)
+library(curl)
+library(class)
+library(e1071)
+library(caret)
+library(plotly)
+library(fuzzyjoin)
+library(RCurl)
+```
+
+Answering question 1 by creating a heat map:
+How many breweries are there for each state?
+
+```{R}
+# write up of the code
+
+# Bringing in the brewery data
+brew_data <- read.csv('https://raw.githubusercontent.com/scottdyl/MSDS6306_CastStudy1/main/Breweries.csv')
+
+# Counting each brewery by each state and renaming the count column to count
+brewery_count = count(breweries,State)
+
+#trimming the extra spaces off of state
+brewery_count$State = str_trim(brewery_count$State)
+
+#getting the fips for each state for my map
+brewery_count$fips = fips(brewery_count$State)
+
+#renaming the 'n' column to count 
+colnames(brewery_count)[2] = 'Count'
+
+plot_usmap(data=brewery_count, values="Count", color = "black") + scale_fill_gradient(name = "Count of Breweries", low = "white", high = "red") + labs(title="Brewery Count by State") + theme(legend.position = "top")
+
+
+```
+
+Merging the two datasets from github and printing the first and last 6.
+
+```{R}
+
+brew_data <- read.csv('https://raw.githubusercontent.com/scottdyl/MSDS6306_CastStudy1/main/Breweries.csv')
+beer_data <- read.csv('https://raw.githubusercontent.com/scottdyl/MSDS6306_CastStudy1/main/Beers.csv')
+
+# changed the ID column name to match in each dataset and did a full join
+colnames(beer_data)[5] = 'Brew_ID'
+bud_data <- full_join(brew_data,beer_data,'Brew_ID')
+
+head(bud_data,6)
+tail(bud_data,6)
+
+
+
+
+```
+
+Address the missing values in each column
+
+```{R}
+# is it best to just filter out the missing data?
+# how else would I fill it in? 
+#unclean data count
+dim(bud_data)
+
+#summing possible missing values to see how much data we will lose
+sum(is.na(bud_data$ABV))
+sum(is.na(bud_data$IBU))
+
+#filtering out the missing values and leaving the full data in new dataframe
+bud_data_clean<- filter(bud_data,!is.na(bud_data$ABV)&!is.na(bud_data$IBU)&!is.na(bud_data$Style))
+colnames(bud_data_clean)[2] = "Brew Name"
+colnames(bud_data_clean)[5] = "Beer Name"
+#clean data count
+dim(bud_data_clean)
+
+```
+
+we would like to find the median alcohol content and IBU for each state
+this will be presented in a bar chart
+
+
+```{R}
+# I pipe in the data and group by state then summarize by median abv giving me median abv by state
+bud_data_clean %>% 
+  group_by(State) %>%
+  summarise(median_ABV = median(ABV)) %>%
+  #I use ggplot bar to plot the data
+  ggplot(aes(State,median_ABV,fill = median_ABV)) +
+  geom_bar(stat = 'identity',width = .75,color = 'black')+
+  scale_fill_gradient(low = 'black', high = 'white') +
+  labs(title="Median ABV by State", x="State", y="Median ABV")+
+  theme(axis.text.x = element_text(angle = 90, vjust = .3))
+
+# This code does the same as the ABV but by IBU
+bud_data_clean %>% 
+  group_by(State) %>%
+  summarise(median_IBU = median(IBU)) %>%
+  #I use ggplot bar to plot the data
+  ggplot(aes(State,median_IBU,fill = median_IBU)) +
+  geom_bar(stat = 'identity',width = .75,color = 'black')+
+  scale_fill_gradient(low = 'black', high = 'white') +
+  labs(title="Median IBU by State", x="State", y="Median IBU")+
+  theme(axis.text.x = element_text(angle = 90, vjust = .3))
+
+
+
+
+```
+
+we will calculate which state has highest ABV and IBU beer
+```{R}
+
+
+# use grep to find the max value then select the columns from the data to show which city, state, name of the beer and name of the brewery
+bud_data_clean[grep(max(bud_data_clean$ABV),bud_data_clean$ABV),] %>% select(City, State, `Beer Name`, `Brew Name`, ABV)
+bud_data_clean[grep(max(bud_data_clean$IBU),bud_data_clean$IBU),] %>% select(City, State, `Beer Name`, `Brew Name`, IBU)
+
+
+
+
+```
+
+Comment on the summary statistics and distribution of the ABV variable.
+for this I will be using a histogram to show the distribution
+
+```{R}
+# here I pipe the budwiser data into a ggplot using the variable ABV and create a histogram
+bud_data_clean %>%
+  ggplot(aes(ABV)) +
+  geom_histogram(fill ='black', binwidth = .0025, color = 'white') +
+  labs(title="Distribution of ABV")
+
+summary(bud_data_clean$ABV)
+#summarize the data by min, max, mean, median, and standard deviation
+summarise(bud_data_clean,
+          max=max(ABV),
+          min=min(ABV),
+          mean = mean(ABV),
+          median = median(ABV),
+          sd=sd(ABV))
+
+
+```
+
+Is there an apparent relationship between the bitterness of the beer and its alcoholic content? Draw a scatter plot.  Make your best judgment of a relationship and EXPLAIN your answer.
+
+```{R}
+
+bud_data_clean %>%
+  ggplot(aes(ABV, IBU)) +
+  geom_jitter(width = .01) +
+  geom_smooth(method = 'lm', se = F, color = 'red')+
+  labs(title="Bitterness vs Alcohol", x="Alcohol Content by Volume", y="IBU")
+
+
+
+```
