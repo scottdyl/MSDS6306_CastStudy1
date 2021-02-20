@@ -190,7 +190,7 @@ bud_data_clean %>%
 #Knock their socks off! Find one other useful inference from the data that you feel Budweiser may #be able to find value in. You must convince them why it is important and back up your conviction #with appropriate statistical evidence. 
 
 #Answer:
-# From the sudy we can see that There are various kind of Brew in different states.One Brew may be popular in one states, may not be poplar in another. This study will help companies to increase their production in states where the brand is famous. This also help to balance demand and supply curve and improve production capacity. 
+# From the study we can see that There are various kind of Brew in different states.One Brew may be popular in one states, may not be poplar in another. This study will help companies to increase their production in states where the brand is famous. This also help to balance demand and supply curve and improve production capacity. 
 
 
 ```
