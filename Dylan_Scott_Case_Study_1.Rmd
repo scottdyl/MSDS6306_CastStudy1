@@ -52,7 +52,7 @@ brewery_count = count(Breweries$State)
 brewery_count$State = str_trim(brewery_count$State)
 
 #getting the fips for each state for my map
-brewery_count$fips = fips(brewery_count$State)
+brewery_count = fips(brewery_count$State)
 
 #renaming the 'n' column to count 
 colnames(brewery_count)[2] = 'Count'
@@ -185,12 +185,21 @@ bud_data_clean %>%
 
 
 
-
 #Question number 9
 #Knock their socks off! Find one other useful inference from the data that you feel Budweiser may #be able to find value in. You must convince them why it is important and back up your conviction #with appropriate statistical evidence. 
 
-#Answer:
+#Style by state graph
+
+bud_data_clean %>%
+  ggplot(aes(Style, fill = factor(State))) +
+  geom_bar()+
+  labs(title="Style by State")
+
+#Conclusion:
 # From the study we can see that There are various kind of Brew in different states.One Brew may be popular in one states, may not be poplar in another. This study will help companies to increase their production in states where the brand is famous. This also help to balance demand and supply curve and improve production capacity. 
+
+
+
 
 
 ```
