@@ -46,7 +46,7 @@ How many breweries are there for each state?
 brew_data <- read.csv('https://raw.githubusercontent.com/scottdyl/MSDS6306_CastStudy1/main/Breweries.csv')
 
 # Counting each brewery by each state and renaming the count column to count
-brewery_count = count(breweries,State)
+brewery_count = count(Breweries$State)
 
 #trimming the extra spaces off of state
 brewery_count$State = str_trim(brewery_count$State)
