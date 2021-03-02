@@ -19,6 +19,8 @@ The following questions will be answered:
 
 7.   Is there an apparent relationship between the bitterness of the beer and its alcoholic content? Draw a scatter plot.  Make your best judgment of a relationship and EXPLAIN your answer.
 
-*add 8 and 9 here*
+8.  Using KNN classification to investigate the difference with respect to IBU and ABV between IPAs (India Pale Ales) and other types of Ale (any beer with “Ale” in its name other than IPA).
+
+9.  Summarize the conclusion and provide recommendation to the company
 
 Files found in this repository: 
