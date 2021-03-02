@@ -183,6 +183,25 @@ bud_data_clean %>%
 #Question number 8
 #Budweiser would also like to investigate the difference with respect to IBU and ABV between IPAs #(India Pale Ales) and other types of Ale (any beer with “Ale” in its name other than IPA).  You #decide to use KNN classification to investigate this relationship.  Provide statistical evidence #one way or the other. You can of course assume your audience is comfortable with percentages … KNN #is very easy to understand conceptually.
 
+set.seed(1234)
+splitpale = .70
+ipasamp <- sample(1:dim(bud_data_clean)[1],round(splitpale * dim(bud_data_clean)[1]))
+
+# The following code separates the randomly selected values into the 70 to 30 split.
+trainIpa <- bud_data_clean[ipasamp,]
+testIpa <- bud_data_clean[-ipasamp,]
+
+
+knnipa <- knn(trainIpa[, c(1,2,3,4,5,6,7,8,9)],testIpa[, c(1,2,3,4,5,6,7,8,9)],cl=trainIpa$Style,k=14,prob = TRUE)
+
+testIpa <- subset(bud_data_clean[0:100, c(1,2,3,4,5,6,7,8,9)])
+trainIpa <- subset(bud_data_clean[101:199,c(1,2,3,4,5,6,7,8,9)])
+
+trueclass <- as.factor(bud_data_clean[101:199,"Style"])
+knn <- class::knn(trainIpa,testIpa,k=7,trueclass)
+
+ipamatrix <- confusionMatrix(knn,trueclass)
+ipamatrix
 
 
 #Question number 9
@@ -190,10 +209,10 @@ bud_data_clean %>%
 
 #Style by state graph
 
-bud_data_clean %>%
-  ggplot(aes(Style, fill = factor(State))) +
-  geom_bar()+
+IPA <- ggplot(data = IPA, aes(x = Style, color = State,)) +
+    stat_count(width = 0.5,) +
   labs(title="Style by State")
+
 
 #Conclusion:
 # From the study we can see that There are various kind of Brew in different states.One Brew may be popular in one states, may not be poplar in another. This study will help companies to increase their production in states where the brand is famous. This also help to balance demand and supply curve and improve production capacity. 
