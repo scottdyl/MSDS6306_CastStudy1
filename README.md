@@ -25,13 +25,14 @@ The following questions will be answered:
 
 Files found in this repository: 
   Folders:
-  data
+  
+  ### data
     brewery.csv - data used for project
     beer.csv - data used for project
-  unit8
+ ### unit8
     CastStudy1_MSDS6306_Budweiser_unit8_final - this was the final presentaiton used for unit 8 EDA
     Dylan_Scott_Case_Study_1.rmd - this was the code used to do the Unit 8 EDA
-  unit9
+### unit9
     - Knit file from the unit 9 code
      Beer_case_study_1.rmd - final code used for proeject
      CastStudy1_MSDS6306_Budweiser_unit9_final - Presentation used for final analysis
